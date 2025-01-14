@@ -52,6 +52,11 @@ Configuration variables
   number of pulses while being asleep, the main SoC will be woken up.
   A number of ``0`` is disables the feature and the main SoC will only awake
   after the configured wakeup time.
+- **enable_pin** (*Optional*, :ref:`config-time`): A GPIO pin to be enabled before 
+  reading the pulse state. The pin must be a valid RTCIO pin.
+- **enable_time** (*Optional, :ref:`config-time`): The delay ``enable_pin`` shall be
+  switched on before reading the pulses. Must be a multiple of ``0.5ms``.
+  Defaults to ``0ms`` (no delay).
 - **total** (*Optional*): Report the total number of pulses counted since the last reset.
 - All other options from :ref:`Sensor <config-sensor>`.
 
@@ -120,6 +125,26 @@ available again after deep sleep.
           name: 'Energy Meter House'
           filters:
             - multiply: 0.001  # (1/1000 pulses per kWh)
+
+Switching the pulse generator
+-----------------------------
+Via `enable_pin` an active pulse generator can be switched on and off for reading the pulse state.
+
+This allows disabling the pulse generator while not reading the pulse state to lower power consumption.
+
+E.g. in case an LED is used to detect a higher reflecting surface, the LED and sensor module can
+be turned off while not reading the sensor state.
+
+
+.. note::
+    Using a water meter as example:
+
+    Maximal flow rate is ``2.5m³/h`` and a pulse is generated every ``0.5L``. This means the pulse state needs
+    to be checked at a frequency of ``5Hz``. This allows turning on the LED only once every ``200ms``.
+    Turning on the LED and sensor module only once every ``200ms`` results in a drastically lower power consumption.
+
+    In case the sensor module needs a current of 3mA, the power consumption drops in this example
+    from ``3mAh`` to ``1ms * 3mA + 0.01mA * 199ms = 0.016mAh``.
 
 Wiring
 ------
